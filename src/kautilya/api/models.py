@@ -1,23 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-class VolunteerListing(models.Model):
-    """
-        Volunteering listing for an NGO.
-
-        @param created_at datetime.datetime: DateTime on which the listing is created.
-        @param title str: Title of the listing.
-        @param description str: Description of the listing.
-        @attr applications List[VolunteeringApplication]: Reverse relationship of the applications made to the Listing.
-        @attr ngo NGO: Reverse relationship of the NGO that made the listing.
-    """
-    created_at = models.DateTimeField(auto_now=True)
-    title = models.CharField(max_length=250)
-    description = models.CharField(max_length=1000)
-
-    def __str__(self):
-        return f'<VolunteerListing {self.created_at} {self.title}>'
-
 class NGO(models.Model):
     """
         Registered NGOs on the Kautilya Platform.
@@ -27,16 +10,34 @@ class NGO(models.Model):
         @param name str: Name of the NGO
         @param description str: Description for the NGO.
         @param location str: Location of the NGO.
-        @param listings List[VolunteerListing]: Listings made by the NGO.
+        @attr listings List[VolunteerListing]: Reverse relationships of Listings made by the NGO.
         @attr members List[Volunteer]: Members part of the NGO.
     """
     name = models.CharField(max_length=250)
     description = models.CharField(max_length=1000)
     location = models.CharField(max_length=100)
-    listings = models.ManyToManyField(VolunteerListing, related_name='ngo')
 
     def __str__(self):
         return f'<NGO {self.name} {self.location}>'  
+
+class VolunteerListing(models.Model):
+    """
+        Volunteering listing for an NGO.
+
+        @param created_at datetime.datetime: DateTime on which the listing is created.
+        @param title str: Title of the listing.
+        @param description str: Description of the listing.
+        @attr applications List[VolunteeringApplication]: Reverse relationship of the applications made to the Listing.
+        @param ngo NGO: NGO that made the listing.
+    """
+    created_at = models.DateTimeField(auto_now=True)
+    title = models.CharField(max_length=250)
+    description = models.CharField(max_length=1000)
+    ngo = models.ForeignKey(NGO, related_name='listings', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'<VolunteerListing {self.created_at} {self.title}>'
+
     
 class Volunteer(models.Model):
     """
@@ -71,4 +72,4 @@ class VolunteeringApplication(models.Model):
     volunteer = models.ForeignKey(Volunteer, related_name='applications', on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'<VolunteeringApplication {self.created_at} {self.listing.title} {self.volunteer.user.usenrame}>'
+        return f'<VolunteeringApplication {self.created_at} {self.listing.title} {self.volunteer.user.username}>'

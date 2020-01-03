@@ -21,13 +21,15 @@ class UserSerializer(serializers.ModelSerializer):
 
 class VolunteerSerializer(serializers.ModelSerializer):
     user = UserSerializer()
+    applications = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     
     class Meta:
         model = Volunteer
         fields = [  
             'user',
             'id',
-            'role_type'
+            'role_type',
+            'applications'
         ]
         extra_kwargs = {
             'id' : {
@@ -72,7 +74,7 @@ class VolunteeringApplicationSerializer(serializers.ModelSerializer):
         
 class VolunteerListingSerializer(serializers.ModelSerializer):
     applications = VolunteeringApplicationSerializer(read_only=True, many=True)
-    ngo = serializers.PrimaryKeyRelatedField(queryset=NGO.objects.all(), many=True)
+    ngo = serializers.PrimaryKeyRelatedField(queryset=NGO.objects.all())
 
     class Meta:
         model = VolunteerListing
@@ -93,23 +95,6 @@ class VolunteerListingSerializer(serializers.ModelSerializer):
             }
         }
         
-    def create(self, validated_data):
-        """ 
-            Create new VolunteerListing,
-            Convert NGO id to NGO Instance,
-            Add VolunteerListing to NGO Instance,
-            Return VolunteerListing
-        """
-        ngo = validated_data.pop('ngo')[0]
-        
-        new_listing = VolunteerListing(**validated_data)
-        new_listing.save()
-
-        ngo.listings.add(new_listing)
-        ngo.save()
-
-        return new_listing
-
 class VolunteeringApplicationForNGOSerializer(VolunteeringApplicationSerializer):
     class Meta(VolunteeringApplicationSerializer.Meta):
         fields = [
