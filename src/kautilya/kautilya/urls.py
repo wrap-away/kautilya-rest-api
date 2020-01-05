@@ -18,17 +18,23 @@ from django.urls import path, include
 
 from rest_framework import routers
 
-from api.views import VolunteerViewSet, VolunteerListingViewSet, VolunteeringApplicationViewSet, NGOViewSet
+from api.views import (
+    VolunteerViewSet, 
+    VolunteerListingViewSet, 
+    VolunteeringApplicationViewSet,
+    NGOViewSet,
+    ConferenceViewSet
+)
 
 router = routers.SimpleRouter()
 router.register(r'volunteer', VolunteerViewSet)
 router.register(r'ngo', NGOViewSet)
 router.register(r'listing', VolunteerListingViewSet)
 router.register(r'application', VolunteeringApplicationViewSet)
+router.register(r'conference', ConferenceViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     path('', include(router.urls)),
-
 ]

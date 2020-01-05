@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+from conference.jitsi import generate_room_name, JITSI_ROOT
+
 class NGO(models.Model):
     """
         Registered NGOs on the Kautilya Platform.
@@ -51,6 +53,8 @@ class Volunteer(models.Model):
                                            replace with Users/Groups.
         @param ngo List[NGO]: List of NGOs user is a member of.
         @attr applications List[VolunteeringApplication]: Reverse relationship of applications for volunteering made by the user.
+        @attr created_meetings List[Conference]: List of meetings created by the user.
+        @attr meetings List[Conference]: Video Conference's volunteer is part of.
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     role_type =  models.CharField(max_length=100, default='Member')
@@ -73,3 +77,26 @@ class VolunteeringApplication(models.Model):
 
     def __str__(self):
         return f'<VolunteeringApplication {self.created_at} {self.listing.title} {self.volunteer.user.username}>'
+
+class Conference(models.Model):
+    """ 
+        Video Conferencing via meet.jit.si
+
+        @param str meeting_name: automatically generated meet.jit.si room name.
+        @param created_by Volunteer: Conference created by volunteer.
+        @param members List[Volunteer]: List of members part of the meeting. 
+        @param meeting_date datetime.datetime: Date and Time of meeting (in UTC).
+        @param title str: Title of the meeting, optional.
+        @param description str: description of the meeting.
+        @attr str meeting_url: automatically generated meet.jit.si url.
+    """
+    meeting_name = models.CharField(max_length=60, default=generate_room_name)
+    created_by = models.ForeignKey(Volunteer, related_name='created_meetings', on_delete=models.CASCADE)
+    members = models.ManyToManyField(Volunteer, related_name='meetings')
+    meeting_date = models.DateTimeField()
+    title = models.CharField(max_length=250, blank=True)
+    description = models.CharField(max_length=1000, blank=True)
+
+    @property
+    def meeting_url(self):
+        return f'{JITSI_ROOT}{self.meeting_name}'

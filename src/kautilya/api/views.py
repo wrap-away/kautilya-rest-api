@@ -1,14 +1,35 @@
 from django.shortcuts import render
 
-from rest_framework import views, parsers, renderers, viewsets
+from rest_framework import (
+    views, 
+    parsers, 
+    renderers, 
+    viewsets,
+    status,
+    permissions
+)
 from rest_framework.response import Response
-from rest_framework import status
-from rest_framework import permissions
 
-from api.serializers import VolunteerSerializer, VolunteerListingSerializer, VolunteeringApplicationSerializer, NGOSerializer
-from api.models import Volunteer, VolunteerListing, VolunteeringApplication, NGO
+from api.serializers import (
+    VolunteerSerializer, 
+    VolunteerListingSerializer, 
+    VolunteeringApplicationSerializer, 
+    NGOSerializer,
+    ConferenceSerializer
+)
 
-from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope, TokenHasScope
+from api.models import (
+    Volunteer, 
+    VolunteerListing, 
+    VolunteeringApplication, 
+    NGO, 
+    Conference
+)
+
+from oauth2_provider.contrib.rest_framework import (
+    TokenHasReadWriteScope, 
+    TokenHasScope
+)
 
 class VolunteerViewSet(viewsets.ModelViewSet):
     """
@@ -37,3 +58,10 @@ class VolunteerListingViewSet(viewsets.ModelViewSet):
     """
     queryset = VolunteerListing.objects.all()
     serializer_class = VolunteerListingSerializer
+
+class ConferenceViewSet(viewsets.ModelViewSet):
+    """
+        ViewSet to handle Conferences.
+    """
+    queryset = Conference.objects.all()
+    serializer_class = ConferenceSerializer

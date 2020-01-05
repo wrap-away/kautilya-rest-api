@@ -1,6 +1,13 @@
 from rest_framework import serializers
-from api.models import Volunteer, VolunteerListing, VolunteeringApplication, NGO
 from django.contrib.auth.models import User
+from api.models import (
+    Volunteer, 
+    VolunteerListing, 
+    VolunteeringApplication, 
+    NGO, 
+    Conference
+)
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -132,4 +139,28 @@ class NGOSerializer(serializers.ModelSerializer):
             'listings': {
                 'read_only': True
             }
+        }
+
+class ConferenceSerializer(serializers.ModelSerializer):
+    members = serializers.PrimaryKeyRelatedField(many=True, queryset=Volunteer.objects.all())
+    created_by = serializers.PrimaryKeyRelatedField(queryset=Volunteer.objects.all())
+    
+    class Meta:
+        model = Conference
+        fields = [
+            'meeting_url',
+            'meeting_name',
+            'title',
+            'description',
+            'meeting_date',
+            'created_by',
+            'members'
+        ]
+        extra_kwargs = {
+            'meeting_url': {
+                'read_only': True
+            },
+            'meeting_name': {
+                'read_only': True
+            },
         }
