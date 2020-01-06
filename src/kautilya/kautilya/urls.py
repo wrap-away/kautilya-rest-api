@@ -24,8 +24,7 @@ from api.views import (
     VolunteeringApplicationViewSet,
     NGOViewSet,
     ConferenceViewSet,
-    DonationViewSet
-
+    DonationViewSet,
 )
 
 router = routers.SimpleRouter()

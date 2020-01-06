@@ -37,7 +37,8 @@ class DonationSerializer(serializers.ModelSerializer):
             'amount',
             'volunteer',
             'ngo',
-            'date'
+            'date',
+            'status'
         ]
 
 class DonationForVolunteerSerializer(DonationSerializer):

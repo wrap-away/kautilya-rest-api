@@ -58,7 +58,7 @@ class Volunteer(models.Model):
         @attr meetings List[Conference]: Video Conference's volunteer is part of.
         @attr donated List[Donation]: Donations done by Volunteer.
     """
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, related_name='volunteer', on_delete=models.CASCADE)
     role_type =  models.CharField(max_length=100, default='Member')
     ngo = models.ManyToManyField(NGO, related_name='members')
 
@@ -111,8 +111,10 @@ class Donation(models.Model):
         @param volunteer Volunteer: Donated by Volunteer.
         @param ngo NGO: Donated to NGO.
         @param date datetime.datetime: DateTime of Donation.
+        @param status str: Status of Transaction.
     """
     amount = models.FloatField()
     volunteer = models.ForeignKey(Volunteer, related_name='donated', on_delete=models.CASCADE)
     ngo = models.ForeignKey(NGO, related_name='donations', on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now=True)
+    status = models.CharField(max_length=50, default='initiated')
