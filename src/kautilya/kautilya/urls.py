@@ -23,7 +23,9 @@ from api.views import (
     VolunteerListingViewSet, 
     VolunteeringApplicationViewSet,
     NGOViewSet,
-    ConferenceViewSet
+    ConferenceViewSet,
+    DonationViewSet
+
 )
 
 router = routers.SimpleRouter()
@@ -32,6 +34,7 @@ router.register(r'ngo', NGOViewSet)
 router.register(r'listing', VolunteerListingViewSet)
 router.register(r'application', VolunteeringApplicationViewSet)
 router.register(r'conference', ConferenceViewSet)
+router.register(r'donation', DonationViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

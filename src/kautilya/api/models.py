@@ -14,6 +14,7 @@ class NGO(models.Model):
         @param location str: Location of the NGO.
         @attr listings List[VolunteerListing]: Reverse relationships of Listings made by the NGO.
         @attr members List[Volunteer]: Members part of the NGO.
+        @attr donations List[Donation]: Donations done to the NGO.
     """
     name = models.CharField(max_length=250)
     description = models.CharField(max_length=1000)
@@ -55,6 +56,7 @@ class Volunteer(models.Model):
         @attr applications List[VolunteeringApplication]: Reverse relationship of applications for volunteering made by the user.
         @attr created_meetings List[Conference]: List of meetings created by the user.
         @attr meetings List[Conference]: Video Conference's volunteer is part of.
+        @attr donated List[Donation]: Donations done by Volunteer.
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     role_type =  models.CharField(max_length=100, default='Member')
@@ -100,3 +102,17 @@ class Conference(models.Model):
     @property
     def meeting_url(self):
         return f'{JITSI_ROOT}{self.meeting_name}'
+
+class Donation(models.Model):
+    """ 
+        Donate to NGOs.
+
+        @param amount float: Amount donated.
+        @param volunteer Volunteer: Donated by Volunteer.
+        @param ngo NGO: Donated to NGO.
+        @param date datetime.datetime: DateTime of Donation.
+    """
+    amount = models.FloatField()
+    volunteer = models.ForeignKey(Volunteer, related_name='donated', on_delete=models.CASCADE)
+    ngo = models.ForeignKey(NGO, related_name='donations', on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now=True)

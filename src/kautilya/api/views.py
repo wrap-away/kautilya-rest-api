@@ -15,7 +15,8 @@ from api.serializers import (
     VolunteerListingSerializer, 
     VolunteeringApplicationSerializer, 
     NGOSerializer,
-    ConferenceSerializer
+    ConferenceSerializer,
+    DonationSerializer
 )
 
 from api.models import (
@@ -23,7 +24,8 @@ from api.models import (
     VolunteerListing, 
     VolunteeringApplication, 
     NGO, 
-    Conference
+    Conference,
+    Donation
 )
 
 from oauth2_provider.contrib.rest_framework import (
@@ -65,3 +67,10 @@ class ConferenceViewSet(viewsets.ModelViewSet):
     """
     queryset = Conference.objects.all()
     serializer_class = ConferenceSerializer
+
+class DonationViewSet(viewsets.ModelViewSet):
+    """
+        ViewSet to handle Donation to NGOs.
+    """
+    queryset = Donation.objects.all()
+    serializer_class = DonationSerializer

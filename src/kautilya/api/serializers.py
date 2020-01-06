@@ -5,7 +5,8 @@ from api.models import (
     VolunteerListing, 
     VolunteeringApplication, 
     NGO, 
-    Conference
+    Conference,
+    Donation
 )
 
 
@@ -26,17 +27,39 @@ class UserSerializer(serializers.ModelSerializer):
             }
         }
 
+class DonationSerializer(serializers.ModelSerializer):
+    volunteer = serializers.PrimaryKeyRelatedField(queryset=Volunteer.objects.all())
+    ngo = serializers.PrimaryKeyRelatedField(queryset=NGO.objects.all())
+
+    class Meta:
+        model = Donation
+        fields = [
+            'amount',
+            'volunteer',
+            'ngo',
+            'date'
+        ]
+
+class DonationForVolunteerSerializer(DonationSerializer):
+    class Meta(DonationSerializer.Meta):
+        fields = [
+            'amount',
+            'ngo'
+        ]
+
 class VolunteerSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     applications = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    
+    donated = DonationForVolunteerSerializer(read_only=True, many=True)
+
     class Meta:
         model = Volunteer
         fields = [  
             'user',
             'id',
             'role_type',
-            'applications'
+            'applications',
+            'donated'
         ]
         extra_kwargs = {
             'id' : {
@@ -90,7 +113,7 @@ class VolunteerListingSerializer(serializers.ModelSerializer):
             'title',
             'description',
             'ngo',
-            'applications'
+            'applications',
         ]
 
         extra_kwargs = {
@@ -120,8 +143,16 @@ class VolunteerListingForNGOSerializer(VolunteerListingSerializer):
             'applications'
         ]
 
+class DonationForNGOSerializer(DonationSerializer):
+    class Meta(DonationSerializer.Meta):
+        fields = [
+            'amount',
+            'volunteer'
+        ]
+
 class NGOSerializer(serializers.ModelSerializer):
     listings  = VolunteerListingForNGOSerializer(read_only=True, many=True)
+    donations = DonationForNGOSerializer(read_only=True, many=True)
 
     class Meta:
         model = NGO
@@ -130,7 +161,8 @@ class NGOSerializer(serializers.ModelSerializer):
             'name',
             'description',
             'location',
-            'listings'
+            'listings',
+            'donations'
         ]
         etra_kwargs = {
             'id' : {
