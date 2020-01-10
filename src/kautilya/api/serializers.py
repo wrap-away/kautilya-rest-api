@@ -52,6 +52,7 @@ class VolunteerSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     applications = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     donated = DonationForVolunteerSerializer(read_only=True, many=True)
+    ngo = serializers.PrimaryKeyRelatedField(queryset=NGO.objects.all(), many=True)
 
     class Meta:
         model = Volunteer
@@ -60,7 +61,8 @@ class VolunteerSerializer(serializers.ModelSerializer):
             'id',
             'role_type',
             'applications',
-            'donated'
+            'donated',
+            'ngo'
         ]
         extra_kwargs = {
             'id' : {
@@ -115,6 +117,7 @@ class VolunteerListingSerializer(serializers.ModelSerializer):
             'description',
             'ngo',
             'applications',
+            'created_at',
         ]
 
         extra_kwargs = {
@@ -152,8 +155,11 @@ class DonationForNGOSerializer(DonationSerializer):
         ]
 
 class NGOSerializer(serializers.ModelSerializer):
-    listings  = VolunteerListingForNGOSerializer(read_only=True, many=True)
+    # listings  = VolunteerListingForNGOSerializer(read_only=True, many=True)
+    listings  = serializers.PrimaryKeyRelatedField(queryset=VolunteerListing.objects.all(), many=True)
     donations = DonationForNGOSerializer(read_only=True, many=True)
+    members = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
+    conferences = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
 
     class Meta:
         model = NGO
@@ -163,20 +169,20 @@ class NGOSerializer(serializers.ModelSerializer):
             'description',
             'location',
             'listings',
-            'donations'
+            'donations',
+            'members',
+            'conferences'
         ]
         etra_kwargs = {
             'id' : {
                 'read_only': True
             },
-            'listings': {
-                'read_only': True
-            }
         }
 
 class ConferenceSerializer(serializers.ModelSerializer):
     members = serializers.PrimaryKeyRelatedField(many=True, queryset=Volunteer.objects.all())
     created_by = serializers.PrimaryKeyRelatedField(queryset=Volunteer.objects.all())
+    ngo = serializers.PrimaryKeyRelatedField(queryset=NGO.objects.all())
     
     class Meta:
         model = Conference
@@ -187,7 +193,8 @@ class ConferenceSerializer(serializers.ModelSerializer):
             'description',
             'meeting_date',
             'created_by',
-            'members'
+            'members',
+            'ngo'
         ]
         extra_kwargs = {
             'meeting_url': {

@@ -15,6 +15,7 @@ class NGO(models.Model):
         @attr listings List[VolunteerListing]: Reverse relationships of Listings made by the NGO.
         @attr members List[Volunteer]: Members part of the NGO.
         @attr donations List[Donation]: Donations done to the NGO.
+        @attr conferences List[Conference]: Conferences organized by the the NGO.
     """
     name = models.CharField(max_length=250)
     description = models.CharField(max_length=1000)
@@ -94,6 +95,7 @@ class Conference(models.Model):
     """
     meeting_name = models.CharField(max_length=60, default=generate_room_name)
     created_by = models.ForeignKey(Volunteer, related_name='created_meetings', on_delete=models.CASCADE)
+    ngo = models.ForeignKey(NGO, related_name='conferences', on_delete=models.CASCADE)
     members = models.ManyToManyField(Volunteer, related_name='meetings')
     meeting_date = models.DateTimeField()
     title = models.CharField(max_length=250, blank=True)
