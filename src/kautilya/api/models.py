@@ -22,7 +22,7 @@ class NGO(models.Model):
     location = models.CharField(max_length=100)
 
     def __str__(self):
-        return f'<NGO {self.name} {self.location}>'  
+        return f'{self.name} - {self.location}'  
 
 class VolunteerListing(models.Model):
     """
@@ -40,7 +40,7 @@ class VolunteerListing(models.Model):
     ngo = models.ForeignKey(NGO, related_name='listings', on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'<VolunteerListing {self.created_at} {self.title}>'
+        return f'{self.title}'
 
     
 class Volunteer(models.Model):
@@ -64,7 +64,7 @@ class Volunteer(models.Model):
     ngo = models.ManyToManyField(NGO, related_name='members')
 
     def __str__(self):
-        return f'<Volunteer {self.user.username} {self.role_type}>'
+        return f'{self.user.username} ({self.role_type})'
 
 class VolunteeringApplication(models.Model):
     """
@@ -79,7 +79,7 @@ class VolunteeringApplication(models.Model):
     volunteer = models.ForeignKey(Volunteer, related_name='applications', on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'<VolunteeringApplication {self.created_at} {self.listing.title} {self.volunteer.user.username}>'
+        return f'{self.volunteer.user.username} ({self.listing.title})'
 
 class Conference(models.Model):
     """ 
